@@ -2,7 +2,6 @@ defmodule EventLog do
   defmacro __using__(_) do
     quote do
       require EventLog
-      alias EventLog
     end
   end
 
@@ -11,7 +10,7 @@ defmodule EventLog do
       start_time = :erlang.system_time
       result = unquote(block[:do])
       duration = (:erlang.system_time - start_time) / 1_000_000_000
-      log("measurement", action: unquote(action), duration: duration)
+      EventLog.log("measurement", action: unquote(action), duration: duration)
       result
     end
   end
