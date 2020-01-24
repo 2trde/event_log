@@ -5,7 +5,7 @@ defmodule EventLog do
     end
   end
 
-  defmacro measure(action, block) do
+  defmacro mesure(action, block) do
     quote do
       start_time = :erlang.system_time
       result = unquote(block[:do])
@@ -31,6 +31,7 @@ defmodule EventLog do
 
   def error(name, params) when is_list(params), do: error(name, Enum.into(params, %{}))
   def error(name, params) do
+    IO.puts "ERROR: #{name}"
     send_es(name, curate_params(params), "error")
   end
 
