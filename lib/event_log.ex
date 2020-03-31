@@ -5,7 +5,7 @@ defmodule EventLog do
     end
   end
 
-  defmacro mesure(action, block) do
+  defmacro measure(action, block) do
     quote do
       start_time = :erlang.system_time
       result = unquote(block[:do])
