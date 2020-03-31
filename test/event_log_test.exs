@@ -11,7 +11,7 @@ defmodule EventLogTest do
     EventLog.log("foo", %{id: 1, seller_id: 2}, %{foo: "image.jpg", bar: "value"})
     month = Timex.format!(Timex.now, "{YYYY}_{0M}")
     assert_receive {:post!, url, body}
-    assert url == "http://127.0.0.1:9200/prod_events_#{month}"
+    assert url == "http://127.0.0.1:9200/prod_events_#{month}/_doc"
     assert %{"app" => nil, "bar" => "value", "foo" => "image.jpg", "name" => "foo", "seller_id" => 2, "timestamp" => _, "user_id" => 1}
              = body |> Poison.decode!
   end

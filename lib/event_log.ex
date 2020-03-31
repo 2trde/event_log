@@ -49,7 +49,7 @@ defmodule EventLog do
 
     spawn fn() ->
       try do
-        HTTPoison.post!("#{es_uri()}/#{es_index(type)}", params |> Poison.encode!,
+        HTTPoison.post!("#{es_uri()}/#{es_index(type)}/_doc", params |> Poison.encode!,
                         [{"Content-type", "application/json"}])
         |> case do
           %{status_code: code} when code in [200, 201] ->
