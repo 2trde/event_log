@@ -73,7 +73,7 @@ defmodule EventLog do
   defp prepare_params(params) do
     params
     |> Enum.into(%{}, fn
-      {k, v} when is_list(v) or is_map(v) -> {k, inspect(v, [limit: :infinity])}
+      {k, v} when is_list(v) or is_map(v) -> {k, inspect(v, [limit: 100_000])}
       {k, v} -> {k, v}
     end)
   end
