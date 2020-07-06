@@ -74,6 +74,7 @@ defmodule EventLog do
     params
     |> Enum.into(%{}, fn
       {k, v} when is_list(v) or is_map(v) -> {k, inspect(v, [limit: 100_000])}
+      {k, v} when is_binary(v) -> {k, String.slice(v, 0..100_000)}
       {k, v} -> {k, v}
     end)
   end
