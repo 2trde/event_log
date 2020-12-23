@@ -23,6 +23,9 @@ defmodule EventLog do
       |> Map.put(:seller_id, seller_id)
     log(name, params)
   end
+  def log(name, _user, params) do
+    log(name, params)
+  end
 
   def log(name, params) when is_list(params), do: log(name, Enum.into(params, %{}))
   def log(name, params) do
