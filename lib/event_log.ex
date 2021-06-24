@@ -60,7 +60,7 @@ defmodule EventLog do
 
     params =
       Map.merge(custom_data, occurrence_data)
-      |> Map.merge(stacktrace)
+      |> Map.merge(%{stacktrace: stacktrace})
 
     send_es(reason, curate_params(params), "error")
   end
