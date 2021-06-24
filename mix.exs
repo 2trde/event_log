@@ -24,7 +24,8 @@ defmodule EventLog.MixProject do
       {:httpoison, "~> 1.5"},
       {:meck, "~> 0.8"},
       {:poison, ">= 3.0.0"},
-      {:timex, "~> 3.0"}
+      {:timex, "~> 3.0"},
+      {:rollbax, "~> 0.11.0"}
     ]
   end
 end
