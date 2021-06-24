@@ -53,6 +53,18 @@ defmodule EventLog do
     send_es(name, curate_params(params), "error")
   end
 
+  def error(kind, reason, stacktrace, custom_data, occurrence_data) do
+    IO.puts("ERROR: #{reason}")
+
+    Rollbax.report(kind, reason, stacktrace, custom_data, occurrence_data)
+
+    params =
+      Map.merge(custom_data, occurrence_data)
+      |> Map.merge(stacktrace)
+
+    send_es(reason, curate_params(params), "error")
+  end
+
   defp curate_params(params), do: Enum.into(params, %{}, &format_stacktrace/1)
 
   defp format_stacktrace({:stacktrace, v}) when is_list(v),
