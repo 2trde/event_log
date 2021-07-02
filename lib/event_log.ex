@@ -44,12 +44,12 @@ defmodule EventLog do
 
     case params do
       %{stacktrace: stacktrace, message: message} = params ->
-        params =
-          params
-          |> Map.delete(:stacktrace)
-          |> Map.delete(:message)
-
+        params = Map.drop(params, [:stacktrace, :message])
         Rollbax.report(:error, message, stacktrace, params)
+
+      %{stacktrace: stacktrace} = params ->
+        params = Map.delete(params, :stacktrace)
+        Rollbax.report(:error, name, stacktrace, params)
 
       params ->
         Rollbax.report_message(:error, name, params)
