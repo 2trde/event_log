@@ -45,14 +45,14 @@ defmodule EventLog do
     case params do
       %{stacktrace: stacktrace, message: message} = params ->
         params = Map.drop(params, [:stacktrace, :message])
-        Rollbax.report(:error, message, stacktrace, params)
+        Rollbax.report(:error, message, stacktrace, EventLog.Rollbax.prep_params(params))
 
       %{stacktrace: stacktrace} = params ->
         params = Map.delete(params, :stacktrace)
-        Rollbax.report(:error, name, stacktrace, params)
+        Rollbax.report(:error, name, stacktrace, EventLog.Rollbax.prep_params(params))
 
       params ->
-        Rollbax.report_message(:error, name, params)
+        Rollbax.report_message(:error, name, EventLog.Rollbax.prep_params(params))
     end
 
     send_es(name, curate_params(params), "error")

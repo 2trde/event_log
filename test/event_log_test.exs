@@ -32,7 +32,6 @@ defmodule EventLogTest do
              "integer" => 123,
              "list" => "[\"some item\", %{\"some\" => \"map\"}]",
              "map" => "%{\"foo\" => \"bar\"}"
-           } =
-             body |> Poison.decode!()
+           } = body |> Poison.decode!()
   end
 end
