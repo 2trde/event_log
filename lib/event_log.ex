@@ -59,7 +59,7 @@ defmodule EventLog do
   end
 
   def error(kind, reason, stacktrace, custom_data, occurrence_data) do
-    IO.puts("ERROR: #{reason}")
+    IO.puts("ERROR: #{inspect reason}")
 
     Rollbax.report(kind, reason, stacktrace, custom_data, occurrence_data)
 
