@@ -1,4 +1,6 @@
 defmodule EventLog do
+  alias EventLog.Blacklist
+
   defmacro __using__(_) do
     quote do
       require EventLog
@@ -42,6 +44,8 @@ defmodule EventLog do
   def error(name, params) do
     IO.puts("ERROR: #{name}")
 
+    params = Blacklist.clean_params(params)
+
     case params do
       %{stacktrace: stacktrace, message: message} = params ->
         params = Map.drop(params, [:stacktrace, :message])
@@ -59,7 +63,10 @@ defmodule EventLog do
   end
 
   def error(kind, reason, stacktrace, custom_data, occurrence_data) do
-    IO.puts("ERROR: #{inspect reason}")
+    IO.puts("ERROR: #{inspect(reason)}")
+
+    custom_data = Blacklist.clean_params(custom_data)
+    occurrence_data = Blacklist.clean_params(occurrence_data)
 
     Rollbax.report(kind, reason, stacktrace, custom_data, occurrence_data)
 
