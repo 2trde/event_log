@@ -3,7 +3,7 @@ defmodule EventLog.Blacklist do
     blacklisted_keys = blacklisted_keys()
 
     Enum.map(params, fn {k, v} ->
-      {k, clean_param(v, blacklisted_keys)}
+      clean_param({k, v}, blacklisted_keys)
     end)
     |> Enum.into(%{})
   end
@@ -11,6 +11,11 @@ defmodule EventLog.Blacklist do
   defp clean_param(param, blacklisted_keys) when is_map(param) do
     Enum.map(param, &clean_param(&1, blacklisted_keys))
     |> Enum.into(%{})
+  end
+
+  defp clean_param(param, blacklisted_keys) when is_list(param) do
+    Enum.map(param, &clean_param(&1, blacklisted_keys))
+    |> Enum.into([])
   end
 
   defp clean_param({key, value}, blacklisted_keys) do
@@ -24,7 +29,11 @@ defmodule EventLog.Blacklist do
   defp clean_param(p, _blacklisted_keys), do: p
 
   defp blacklisted_keys() do
-    Application.get_env(:event_log, EventLog.Blacklist, [:password, :password_confirmation])
+    Application.get_env(:event_log, EventLog.Blacklist, [
+      :password,
+      :password_confirmation,
+      :password_hash
+    ])
     |> Enum.reduce([], fn elem, acc ->
       acc ++ [elem] ++ [Atom.to_string(elem)]
     end)

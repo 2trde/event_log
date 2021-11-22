@@ -7,7 +7,9 @@ defmodule EventLog.BlacklistTest do
     params = %{
       user: %{
         id: 212,
-        name: "what"
+        name: "what",
+        list_normal: [1, 2, 3, 4],
+        list: [yolo: false]
       },
       yolo: false
     }
@@ -23,7 +25,8 @@ defmodule EventLog.BlacklistTest do
         password: "SECRET",
         nested: %{
           password_confirmation: "SECRET"
-        }
+        },
+        list: [password: "SECRET"]
       },
       yolo: false
     }
@@ -35,7 +38,8 @@ defmodule EventLog.BlacklistTest do
                password: "***REDACTED***",
                nested: %{
                  password_confirmation: "***REDACTED***"
-               }
+               },
+               list: [password: "***REDACTED***"]
              },
              yolo: false
            }
