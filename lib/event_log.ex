@@ -59,7 +59,9 @@ defmodule EventLog do
         Rollbax.report_message(:error, name, EventLog.Rollbax.prep_params(params))
     end
 
-    send_es(name, curate_params(params), "error")
+    if send_to_es?() do
+      send_es(name, curate_params(params), "error")
+    end
   end
 
   def error(kind, reason, stacktrace, custom_data, occurrence_data) do
@@ -74,7 +76,9 @@ defmodule EventLog do
       Map.merge(custom_data, occurrence_data)
       |> Map.merge(%{stacktrace: stacktrace})
 
-    send_es(reason, curate_params(params), "error")
+    if send_to_es?() do
+      send_es(reason, curate_params(params), "error")
+    end
   end
 
   defp curate_params(params), do: Enum.into(params, %{}, &format_stacktrace/1)
@@ -147,4 +151,8 @@ defmodule EventLog do
     do:
       (System.get_env("ES_INDEX_PREFIX") || "prod") <>
         "_errors_" <> Timex.format!(Timex.now(), "{YYYY}_{0M}")
+
+  defp send_to_es?() do
+    Application.get_env(:event_log, EventLog, send_errors_to_es: true)[:send_errors_to_es]
+  end
 end
