@@ -13,6 +13,10 @@ defmodule EventLog.Blacklist do
     |> Enum.into(%{})
   end
 
+  defp clean_param(param, blacklisted_keys) when is_struct(param) do
+    clean_param(Map.from_struct(param), blacklisted_keys)
+  end
+
   defp clean_param(param, blacklisted_keys) when is_list(param) do
     Enum.map(param, &clean_param(&1, blacklisted_keys))
     |> Enum.into([])
