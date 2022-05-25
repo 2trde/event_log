@@ -70,7 +70,13 @@ defmodule EventLog do
     custom_data = Blacklist.clean_params(custom_data)
     occurrence_data = Blacklist.clean_params(occurrence_data)
 
-    Rollbax.report(kind, reason, stacktrace, custom_data, occurrence_data)
+    Rollbax.report(
+      kind,
+      reason,
+      stacktrace,
+      EventLog.Rollbax.prep_params(custom_data),
+      EventLog.Rollbax.prep_params(occurrence_data)
+    )
 
     params =
       Map.merge(custom_data, occurrence_data)
