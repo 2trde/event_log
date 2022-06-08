@@ -75,7 +75,7 @@ defmodule EventLog do
       reason,
       stacktrace,
       EventLog.Rollbax.prep_params(custom_data),
-      EventLog.Rollbax.prep_params(occurrence_data)
+      occurrence_data
     )
 
     params =
