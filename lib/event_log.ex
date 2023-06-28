@@ -1,5 +1,6 @@
 defmodule EventLog do
   alias EventLog.Blacklist
+  alias EventLog.ProcessMap
 
   defmacro __using__(_) do
     quote do
@@ -16,6 +17,9 @@ defmodule EventLog do
       result
     end
   end
+
+  def start_context(key), do: ProcessMap.start(key)
+  def finish_context(), do: ProcessMap.finish()
 
   def log(name, user, params) when is_list(params), do: log(name, user, Enum.into(params, %{}))
 
@@ -102,13 +106,15 @@ defmodule EventLog do
 
   defp send_es(name, params, type) do
     now = Timex.format!(Timex.now(), "{ISO:Extended}")
+    process_id = ProcessMap.get_key()
 
     params =
-      %{app: System.get_env("APP_NAME"), name: name, timestamp: now}
+      %{s_process_id: process_id, app: System.get_env("APP_NAME"), name: name, timestamp: now}
       |> Map.merge(params)
       |> prepare_params()
 
     spawn(fn ->
+
       try do
         HTTPoison.post!("#{es_uri()}/#{es_index(type)}/_doc", params |> Poison.encode!(), [
           {"Content-type", "application/json"}
