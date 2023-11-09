@@ -16,7 +16,7 @@ defmodule EventLog.S3Upload do
 
     %{status_code: 200} =
       ExAws.S3.Upload.stream_file(tmp_file)
-      |> ExAws.S3.upload(bucket, filename, [timeout: 600_000, content_type: MIME.from_path(filename)])
+      |> ExAws.S3.upload(bucket, filename, [acl: :public_read, timeout: 600_000, content_type: MIME.from_path(filename)])
       |> ExAws.request!()
 
     File.rm(tmp_file)
