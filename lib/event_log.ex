@@ -143,7 +143,15 @@ defmodule EventLog do
   # we call inspect to ensure correct formatting for elasticsearch
   defp prepare_params(params) do
     params
+    |> Enum.map(fn
+      {k, v} when is_atom(k) -> {"#{k}", v}
+      t -> t
+    end)
     |> Enum.into(%{}, fn
+      {"s3_" <> _ = k, data} ->
+        ext = _get_extension_by_key(k)
+        sha1 = EventLog.S3Upload.upload_data(data, ext)
+        {k, "https://cdn.2trde.com/#{sha1}"}
       {k, v} when is_binary(v) -> {k, String.slice(v, 0..10_000)}
       {k, v} when is_number(v) or is_atom(v) -> {k, v}
       {k, v} -> {k, inspect(v, limit: 10_000)}
@@ -172,5 +180,17 @@ defmodule EventLog do
 
   defp send_to_es?() do
     Application.get_env(:event_log, EventLog, send_errors_to_es: true)[:send_errors_to_es]
+  end
+
+  @supported_extensions ["jpg", "jpeg", "png", "json", "xml"]
+  def _get_extension_by_key(key) do
+    key
+    |> String.split("_")
+    |> List.last()
+    |> case do
+      ext when ext in @supported_extensions ->
+        ext
+      _ -> "json"
+    end
   end
 end

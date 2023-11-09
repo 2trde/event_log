@@ -26,7 +26,9 @@ defmodule EventLog.MixProject do
       {:meck, "~> 0.8"},
       {:poison, ">= 3.0.0"},
       {:timex, "~> 3.0"},
-      {:rollbax, "~> 0.11.0"}
+      {:rollbax, "~> 0.11.0"},
+      {:ex_aws, "~> 2.0"},
+      {:ex_aws_s3, "~> 2.0"},
     ]
   end
 end
