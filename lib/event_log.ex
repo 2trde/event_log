@@ -46,8 +46,6 @@ defmodule EventLog do
   def error(name, params) when is_list(params), do: error(name, Enum.into(params, %{}))
 
   def error(name, params) do
-    IO.puts("ERROR: #{name}")
-
     params = Blacklist.clean_params(params)
 
     try do
