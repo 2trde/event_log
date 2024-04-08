@@ -105,37 +105,39 @@ defmodule EventLog do
   defp format_stacktrace({k, v}), do: {k, v}
 
   defp send_es(name, params, type) do
-    now = Timex.format!(Timex.now(), "{ISO:Extended}")
-    process_id = ProcessMap.get_key()
+    if es_uri() do
+      now = Timex.format!(Timex.now(), "{ISO:Extended}")
+      process_id = ProcessMap.get_key()
 
-    params =
-      %{s_process_id: process_id, app: System.get_env("APP_NAME"), name: name, timestamp: now}
-      |> Map.merge(params)
-      |> prepare_params()
+      params =
+        %{s_process_id: process_id, app: System.get_env("APP_NAME"), name: name, timestamp: now}
+        |> Map.merge(params)
+        |> prepare_params()
 
-    spawn(fn ->
+      spawn(fn ->
 
-      try do
-        HTTPoison.post!("#{es_uri()}/#{es_index(type)}/_doc", params |> Poison.encode!(), [
-          {"Content-type", "application/json"}
-        ])
-        |> case do
-          %{status_code: code} when code in [200, 201] ->
-            nil
+        try do
+          HTTPoison.post!("#{es_uri()}/#{es_index(type)}/_doc", params |> Poison.encode!(), [
+            {"Content-type", "application/json"}
+          ])
+          |> case do
+            %{status_code: code} when code in [200, 201] ->
+              nil
 
-          res ->
-            IO.inspect(res, label: "response")
+            res ->
+              IO.inspect(res, label: "response")
+              local_log(params, type)
+          end
+        rescue
+          err ->
+            if Mix.env() == :prod do
+              IO.inspect(err)
+            end
+
             local_log(params, type)
         end
-      rescue
-        err ->
-          if Mix.env() == :prod do
-            IO.inspect(err)
-          end
-
-          local_log(params, type)
-      end
-    end)
+      end)
+    end
 
     {:ok, params}
   end
@@ -166,7 +168,7 @@ defmodule EventLog do
 
   defp local_log(_, _), do: :ok
 
-  defp es_uri(), do: System.get_env("ES_URI") || "http://127.0.0.1:9200"
+  defp es_uri(), do: System.get_env("ES_URI")
 
   defp es_index("event"),
     do:
