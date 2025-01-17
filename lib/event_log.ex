@@ -117,7 +117,7 @@ defmodule EventLog do
         try do
           HTTPoison.post!("#{es_uri()}/#{es_index(type)}/_doc", params |> Poison.encode!(), [
             {"Content-type", "application/json"}
-          ])
+          ], hackney: [:insecure])
           |> case do
             %{status_code: code} when code in [200, 201] ->
               nil
