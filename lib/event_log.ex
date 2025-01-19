@@ -117,11 +117,11 @@ defmodule EventLog do
         try do
           creds_user = System.get_env("ES_USERNAME")
           creds_password = System.get_env("ES_PASSWORD")
-          auth = if creds_user, do: [hackney: [basic_auth: {creds_user, creds_password}]], else: []
+          auth = if creds_user, do: [basic_auth: {creds_user, creds_password}], else: []
 
           HTTPoison.post!("#{es_uri()}/#{es_index(type)}/_doc", params |> Poison.encode!(), [
             {"Content-type", "application/json"}
-          ], [hackney: [:insecure]] ++ auth)
+          ], [hackney: [:insecure] ++ auth])
           |> case do
             %{status_code: code} when code in [200, 201] ->
               nil
