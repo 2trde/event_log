@@ -48,43 +48,16 @@ defmodule EventLog do
   def error(name, params) do
     params = Blacklist.clean_params(params)
 
-    try do
-      case params do
-        %{stacktrace: stacktrace, message: message} = params ->
-          params = Map.drop(params, [:stacktrace, :message])
-          Rollbax.report(:error, message, stacktrace, EventLog.Rollbax.prep_params(params))
-
-        %{stacktrace: stacktrace} = params ->
-          params = Map.delete(params, :stacktrace)
-          Rollbax.report(:error, name, stacktrace, EventLog.Rollbax.prep_params(params))
-
-        params ->
-          Rollbax.report_message(:error, name, EventLog.Rollbax.prep_params(params))
-      end
-    rescue
-      e ->
-        IO.puts "Failed to log to rollbar: #{inspect e}"
-        :ok
-    end
-
     if send_to_es?() do
       send_es(name, curate_params(params), "error")
     end
   end
 
-  def error(kind, reason, stacktrace, custom_data, occurrence_data) do
+  def error(_kind, reason, stacktrace, custom_data, occurrence_data) do
     IO.puts("ERROR: #{inspect(reason)}")
 
     custom_data = Blacklist.clean_params(custom_data)
     occurrence_data = Blacklist.clean_params(occurrence_data)
-
-    Rollbax.report(
-      kind,
-      reason,
-      stacktrace,
-      EventLog.Rollbax.prep_params(custom_data),
-      occurrence_data
-    )
 
     params =
       Map.merge(custom_data, occurrence_data)
