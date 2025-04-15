@@ -113,7 +113,9 @@ defmodule EventLog do
         end
       end)
     else
-      IO.puts "#{type}: #{name} (#{inspect params})"
+      if System.get_env("LOG") == "true" do
+        IO.puts "#{type}: #{name} (#{inspect params})"
+      end
     end
 
     {:ok, params}
