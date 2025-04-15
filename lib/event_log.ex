@@ -112,6 +112,8 @@ defmodule EventLog do
             local_log(params, type)
         end
       end)
+    else
+      IO.puts "#{type}: #{name} (#{inspect params})"
     end
 
     {:ok, params}
